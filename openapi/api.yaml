@@ -1,0 +1,60 @@
+openapi: 3.1.0
+info:
+  title: Karelia API 
+  description: |-
+    This is a sample of Karelia API made by Anatolii.
+    
+    Some useful links:
+    -[Learn OpeanAPI](http://learn.openapis.org)
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: anatolii.bykov@edu.karelia.fi
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.0.1
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:3000 #remove https 
+tags:
+  - name: Sample dataset
+    description: Everything about APIs
+    externalDocs: #find out more thing
+      description: Find out more
+      url: https://m.karelia.fi
+paths:
+  /data: #uri endpoint
+    get:
+      tags:
+        - Sample dataset
+      summary: Returns a dataset
+      description: Returns a dataset with something more blablabla..
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Data'
+        '415':
+          description: Unsupported media type
+
+components:
+  schemas:
+    Data:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 111
+        forename:
+          type: string
+          example: Harry
+        surname:
+          type: string
+          example: Balsanya
