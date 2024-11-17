@@ -1,0 +1,294 @@
+openapi: 3.1.0
+info:
+  title: Karelia API 
+  description: |-
+    This is a sample of Karelia API made by Anatolii.
+    
+    Some useful links:
+    - [Learn OpenAPI](http://learn.openapis.org)
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: anatolii.bykov@edu.karelia.fi
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.0.1
+# 2) Apply the security globally to all operations
+security:
+  - bearerAuth: [] #second option
+  #- ApiKeyAuth: []
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:3000 #remove https 
+tags:
+  - name: Sample dataset
+    description: Everything about APIs
+    externalDocs: #find out more thing
+      description: Find out more
+      url: https://m.karelia.fi
+paths:
+  /data/verify-token:
+    get:
+      summary: Validate a token
+      description: Checks if the provided Bearer token is valid.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Token is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          description: Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /data:
+    get:
+      tags:
+        - Sample dataset
+      summary: Returns a dataset
+      description: Returns a dataset with something more blablabla..
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Data'
+        '415':
+          description: Unsupported media type
+        '401':
+          description: Unauthorized
+    post: 
+      tags:
+        - Sample dataset
+      summary: Create a new data record
+      description: Creates a new data record in the dataset.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Data'
+      responses:
+        '201':
+          description: Data created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Data'
+        '415':
+          description: Unsupported media type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Record already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /data/{id}:
+    get:
+      tags:
+        - Sample dataset
+      summary: Get a data record by ID
+      description: Retrieves a single data record by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Data'
+        '404':
+          description: Data not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - Sample dataset
+      summary: Update or create a data record
+      description: Updates an existing data record or creates a new one if it does not exist.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Firstname:
+                  type: string
+                Surname:
+                  type: string
+              required:
+                - Firstname
+                - Surname
+      responses:
+        '200':
+          description: Data updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Data'
+        '201':
+          description: Data created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Data'
+        '400':
+          description: ID mismatch error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported media type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Sample dataset
+      summary: Delete a data record by ID
+      description: Deletes a single data record by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Data deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '404':
+          description: Data not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /login:
+    post:
+      summary: User Login
+      description: Authenticates a user and provides a JWT for authorization.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: pl
+                password:
+                  type: string
+                  example: pltest
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: Bearer
+                  expires_in:
+                    type: string
+                    example: 1h
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+components:
+  schemas:
+    Data:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 111
+        Firstname:
+          type: string
+          example: Harry
+        Surname:
+          type: string
+          example: Potter
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Error message describing what went wrong.
+    Success:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operation completed successfully.
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # optional, arbitrary value for documentation purposes
+   # ApiKeyAuth: # arbitrary name for the security scheme
+   #   type: apiKey
+   #   in: header # can be "header", "query" or "cookie"
+   #   name: X-API-KEY # name of the header, query parameter or cookie
